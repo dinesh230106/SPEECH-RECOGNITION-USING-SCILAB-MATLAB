@@ -1,6 +1,6 @@
 ### AIM: 
 
-To perform and verify speech recognition using SCILAB. 
+To perform and verify speech recognition using Python. 
 
 ### APPARATUS REQUIRED:
 software using co-lab
