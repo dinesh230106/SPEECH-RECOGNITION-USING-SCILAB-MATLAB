@@ -2,84 +2,61 @@
 
 To perform and verify speech recognition using SCILAB. 
 
-### APPARATUS REQUIRED: 
-PC installed with SCILAB. 
+### APPARATUS REQUIRED:
+software using co-lab
 
 ### PROGRAM : 
 ```
-//  SPEECH RECOGNITION USING SCILAB
-clc;
-clear;
-close;
+!pip install SpeechRecognition pydub
 
-disp("Loading audio files...");
+from google.colab import files
+from IPython.display import Audio
 
-// Read reference and test voice files
-[y1, fs1] = wavread("C:\Users\acer\Downloads\referrence.wav");
-[y2, fs2] = wavread("C:\Users\acer\Downloads\test.wav");
+uploaded = files.upload()
 
-// Check sampling rates
-if fs1 <> fs2 then
-    error("Sampling rates must match!");
-end
+# Get file name
+file_name = list(uploaded.keys())[0]
 
-// Convert stereo to mono (if needed)
-if size(y1,2) == 2 then
-    y1 = mean(y1, 2);
-end
-if size(y2,2) == 2 then
-    y2 = mean(y2, 2);
-end
+# Play the audio
+print("Playing uploaded audio:")
+display(Audio(file_name))
 
-// Make both signals same length
-n = min(length(y1), length(y2));
-y1 = y1(1:n);
-y2 = y2(1:n);
+import speech_recognition as sr
+from pydub import AudioSegment
 
-// Compute Euclidean distance
-dist = sqrt(sum((y1 - y2).^2));
+# Convert mp3 → wav if needed
+if file_name.endswith(".mp3"):
+    sound = AudioSegment.from_mp3(file_name)
+    file_name_wav = "converted.wav"
+    sound.export(file_name_wav, format="wav")
+else:
+    file_name_wav = file_name
 
-disp("Euclidean distance (reference vs test): " + string(dist));
+# Recognize speech
+r = sr.Recognizer()
 
-// Decision based on threshold
-if dist < 0.5 then
-    disp("Matching with reference (same word)");
-else
-    disp("Not matching with reference (different word)");
-end
+with sr.AudioFile(file_name_wav) as source:
+    audio = r.record(source)
 
-// Plot both signals
-figure(0);
-subplot(2,1,1);
-plot(y1);
-title("REFERENCE VOICE SIGNAL");
-xlabel("Samples");
-ylabel("Amplitude");
+try:
+    text = r.recognize_google(audio)
+    print("Text from speech:")
+    print(text)
 
-subplot(2,1,2);
-plot(y2);
-title("TEST VOICE SIGNAL");
-xlabel("Samples");
-ylabel("Amplitude");
+except Exception as e:
+    print("Error:", e)
 
-// Comparison plot
-figure(1);
-plot(y1, 'b');
-plot(y2, 'r');
-title("Original (Blue) vs Test (Red) Signal");
-xlabel("Samples");
-ylabel("Amplitude");
-legend(["Reference", "Test"]);
-
-disp("Waveforms plotted successfully. Close the graph window manually to finish.");
 
 ```
 
 ### OUTPUT: 
-<img width="905" height="577" alt="image" src="https://github.com/user-attachments/assets/8acffbfe-f052-4029-a209-6fe57e8f29b4" />
-<img width="760" height="600" alt="image" src="https://github.com/user-attachments/assets/f43f8351-e268-4bf4-803c-255111bf5cff" />
-<img width="762" height="600" alt="image" src="https://github.com/user-attachments/assets/a1981565-0b3f-4f53-a8d3-0271e15f25c1" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/76f19917-2109-490c-b451-d100d981ca2b" />
+
+
+
+https://github.com/user-attachments/assets/8b9f6be8-e34f-40bc-b38f-aa369aca0167
+
 
 
 ### RESULT: 
-Thus the speech recognition using SCILAB was performed and verified.
+Thus the speech recognition using co-lab was performed and verified.
